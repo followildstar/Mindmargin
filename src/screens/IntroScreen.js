@@ -47,7 +47,7 @@ export default function IntroScreen() {
 
         <View style={{ height: 18 }} />
          <Text style={[styles.subtitle, { fontFamily: 'Montserrat-Bold' }]}>
-            <Text style={{ opacity: 0.3 }}>Exploring Minds,{"\n"}Inspiring 
+            <Text style={{ opacity: 0.3 }}>Exploring Minds{"\n"}Inspiring 
             Sentences.</Text>{"\n"}What's yours?
           </Text>
 {/* 
