@@ -242,14 +242,20 @@ const onViewableItemsChanged = useRef(({ viewableItems }) => {
 
 
  // 백업 함수 추가
-  const handleBackup = async () => {
+const handleBackup = async () => {
+  console.log('🔵 handleBackup 시작, quotes:', quotes.length); // 추가
+  try {
     const result = await backupQuotes(quotes);
+    console.log('🔵 backupQuotes 결과:', result); // 추가
     if (result.success) {
       Alert.alert('백업 완료', `${result.fileName} 파일이 생성되었습니다.`);
     } else {
       Alert.alert('백업 실패', result.error || '백업 중 오류가 발생했습니다.');
     }
-  };
+  } catch (error) {
+    console.error('🔴 백업 중 에러:', error); // 추가
+  }
+};
 
   // 복원 함수 추가
   const handleRestore = async () => {
