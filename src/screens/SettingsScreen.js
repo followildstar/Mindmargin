@@ -9,9 +9,9 @@ import {
   StyleSheet,
   Alert,
   Image,
+  Platform,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-// GestureHandlerRootView, SafeAreaProvider import 제거!
 
 export const SettingsScreen = ({ 
   visible, 
@@ -21,8 +21,16 @@ export const SettingsScreen = ({
   onClearAll,
   totalCount 
 }) => {
-  
+
+  const isWeb = Platform.OS === 'web';
+
+  // 웹에서는 확인창 없이 즉시 실행 (사용자 클릭 제스처가 끊기면
+  // 파일 다운로드/선택창이 브라우저에서 막힐 수 있기 때문)
   const handleBackup = () => {
+    if (isWeb) {
+      onBackup();
+      return;
+    }
     Alert.alert(
       '데이터 백업',
       '현재 데이터를 파일로 저장하시겠습니까?',
@@ -34,6 +42,10 @@ export const SettingsScreen = ({
   };
 
   const handleRestore = () => {
+    if (isWeb) {
+      onRestore();
+      return;
+    }
     Alert.alert(
       '데이터 복원',
       '파일에서 데이터를 불러옵니다.\n현재 데이터는 덮어씌워집니다.',
@@ -44,6 +56,7 @@ export const SettingsScreen = ({
     );
   };
 
+  // 삭제는 AsyncStorage만 사용하므로 제스처 체인과 무관 -> 확인창 유지
   const handleClearAll = () => {
     Alert.alert(
       '전체 삭제',
