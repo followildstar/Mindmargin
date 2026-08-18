@@ -34,8 +34,14 @@ export const saveQuotes = async (quotes) => {
 // ============================================
 
 // 웹 전용: Blob + <a download> 로 파일 다운로드
+// iOS Safari는 <a download>를 무시하고 새 탭에서 여는 경우가 많아서
+// data URL 방식으로 폴백 처리
 const backupQuotesWeb = async (quotes) => {
   try {
+    if (typeof document === 'undefined') {
+      return { success: false, error: 'document 객체를 찾을 수 없습니다 (웹 환경 아님).' };
+    }
+
     const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
     const fileName = `quotes_backup_${timestamp}.json`;
 
@@ -47,21 +53,23 @@ const backupQuotesWeb = async (quotes) => {
     };
 
     const jsonString = JSON.stringify(backupData, null, 2);
-    const blob = new Blob([jsonString], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
+
+    // Safari는 Blob URL보다 data: URL을 더 안정적으로 처리함
+    const dataUrl =
+      'data:application/json;charset=utf-8,' + encodeURIComponent(jsonString);
 
     const link = document.createElement('a');
-    link.href = url;
-    link.download = fileName;
+    link.setAttribute('href', dataUrl);
+    link.setAttribute('download', fileName);
+    link.style.display = 'none';
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
-    URL.revokeObjectURL(url);
 
     return { success: true, fileName };
   } catch (error) {
     console.error('Web backup failed:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: String(error && error.message ? error.message : error) };
   }
 };
 
@@ -110,19 +118,45 @@ export const backupQuotes = async (quotes) => {
 // ============================================
 
 // 웹 전용: <input type="file"> 트리거해서 파일 읽기
+// input을 실제 DOM에 붙여야 iOS Safari에서 안정적으로 동작함
 const restoreQuotesWeb = async () => {
   return new Promise((resolve) => {
+    if (typeof document === 'undefined') {
+      resolve({ success: false, error: 'document 객체를 찾을 수 없습니다 (웹 환경 아님).' });
+      return;
+    }
+
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'application/json';
+    input.accept = 'application/json,.json';
+    input.style.position = 'fixed';
+    input.style.top = '-1000px';
+    input.style.left = '-1000px';
 
-    // 파일 선택 없이 취소한 경우 감지용
     let resolved = false;
+
+    const cleanup = () => {
+      window.removeEventListener('focus', onFocus);
+      if (input.parentNode) {
+        input.parentNode.removeChild(input);
+      }
+    };
+
+    const onFocus = () => {
+      setTimeout(() => {
+        if (!resolved) {
+          resolved = true;
+          cleanup();
+          resolve({ success: false, canceled: true });
+        }
+      }, 500);
+    };
 
     input.onchange = async (event) => {
       const file = event.target.files && event.target.files[0];
       if (!file) {
         resolved = true;
+        cleanup();
         resolve({ success: false, canceled: true });
         return;
       }
@@ -139,6 +173,7 @@ const restoreQuotesWeb = async () => {
         await saveQuotes(restoredQuotes);
 
         resolved = true;
+        cleanup();
         resolve({
           success: true,
           count: restoredQuotes.length,
@@ -147,25 +182,13 @@ const restoreQuotesWeb = async () => {
       } catch (error) {
         console.error('Web restore failed:', error);
         resolved = true;
-        resolve({ success: false, error: error.message });
+        cleanup();
+        resolve({ success: false, error: String(error && error.message ? error.message : error) });
       }
     };
 
-    // 파일 선택창을 취소(다이얼로그만 닫음)했을 때는 change 이벤트가 안 뜨므로
-    // window에 focus가 돌아오는 시점을 기준으로 취소 여부를 판단
-    window.addEventListener(
-      'focus',
-      () => {
-        setTimeout(() => {
-          if (!resolved) {
-            resolved = true;
-            resolve({ success: false, canceled: true });
-          }
-        }, 500);
-      },
-      { once: true }
-    );
-
+    document.body.appendChild(input);
+    window.addEventListener('focus', onFocus, { once: true });
     input.click();
   });
 };
