@@ -241,47 +241,44 @@ export default function App() {
 
 
   // 백업 함수
+  // try/catch 밖에서도 무조건 Alert로 결과를 보여줘서
+  // 콘솔을 볼 수 없는 모바일 브라우저에서도 원인을 바로 확인 가능하게 함
   const handleBackup = async () => {
-    console.log('=== BACKUP START ===');
-    console.log('quotes.length:', quotes.length);
-    
+    let result;
     try {
-      const result = await backupQuotes(quotes);
-      console.log('backup result:', result);
-      
-      if (result.success) {
-        Alert.alert('✅ 백업 완료', `${result.fileName}\n파일이 저장되었습니다.`);
-        setSettingsVisible(false);
-      } else {
-        Alert.alert('❌ 백업 실패', result.error || '백업 중 오류가 발생했습니다.');
-      }
+      result = await backupQuotes(quotes);
     } catch (error) {
-      console.error('BACKUP ERROR:', error);
-      Alert.alert('❌ 에러', error.message || '알 수 없는 오류가 발생했습니다.');
+      result = { success: false, error: String(error && error.message ? error.message : error) };
+    }
+
+    if (result && result.success) {
+      Alert.alert('✅ 백업 완료', `${result.fileName}\n파일이 저장되었습니다.`);
+      setSettingsVisible(false);
+    } else {
+      Alert.alert('❌ 백업 실패', (result && result.error) || '알 수 없는 오류 (결과값 없음)');
     }
   };
 
   // 복원 함수
   const handleRestore = async () => {
-    console.log('=== RESTORE START ===');
-    
+    let result;
     try {
-      const result = await restoreQuotes();
-      console.log('restore result:', result);
-      
-      if (result.success) {
-        setSettingsVisible(false);
-        Alert.alert(
-          '✅ 복원 완료',
-          `${result.count}개의 문장이 복원되었습니다.\n\n앱을 다시 시작해주세요.`,
-          [{ text: '확인', style: 'default' }]
-        );
-      } else if (!result.canceled) {
-        Alert.alert('❌ 복원 실패', result.error || '복원 중 오류가 발생했습니다.');
-      }
+      result = await restoreQuotes();
     } catch (error) {
-      console.error('RESTORE ERROR:', error);
-      Alert.alert('❌ 에러', error.message || '알 수 없는 오류가 발생했습니다.');
+      result = { success: false, error: String(error && error.message ? error.message : error) };
+    }
+
+    if (result && result.success) {
+      setSettingsVisible(false);
+      Alert.alert(
+        '✅ 복원 완료',
+        `${result.count}개의 문장이 복원되었습니다.\n\n앱을 다시 시작해주세요.`,
+        [{ text: '확인', style: 'default' }]
+      );
+    } else if (result && result.canceled) {
+      // 사용자가 파일 선택을 취소한 경우 - 조용히 무시
+    } else {
+      Alert.alert('❌ 복원 실패', (result && result.error) || '알 수 없는 오류 (결과값 없음)');
     }
   };
 
