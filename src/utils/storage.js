@@ -98,3 +98,14 @@ export const restoreQuotes = async () => {
     return { success: false, error: error.message };
   }
 };
+
+
+export const deleteAllQuotes = async () => {
+  try {
+    await AsyncStorage.removeItem(STORAGE_KEY);
+    return { success: true };
+  } catch (error) {
+    console.error('Delete failed:', error);
+    return { success: false, error: error.message };
+  }
+};
