@@ -70,7 +70,7 @@ export default function App() {
 
   const [settingsVisible, setSettingsVisible] = useState(false); // 추가
   const [detailVisible, setDetailVisible] = useState(false);
-const [selectedQuote, setSelectedQuote] = useState(null);
+  const [selectedQuote, setSelectedQuote] = useState(null);
 
   const pageListRef = useRef(null);
   const viewModeRef = useRef(viewMode);
@@ -145,169 +145,192 @@ const [selectedQuote, setSelectedQuote] = useState(null);
   };
 
   // 리스트에서 카드 클릭 핸들러
-const handleListCardPress = (item, index) => {
-  if (selectionMode) {
-    toggleSelect(item.id);
-    return;
-  }
-  
-  // 모달 팝업
-  setSelectedQuote(item);
-  setDetailVisible(true);
-};
-
-// 모달에서 수정
-const handleDetailEdit = () => {
-  setDetailVisible(false);
-  if (selectedQuote) {
-    openEdit(selectedQuote);
-  }
-};
-
-// 모달에서 공유
-const handleDetailShare = () => {
-  if (selectedQuote) {
-    shareQuote(selectedQuote);
-  }
-};
-
-// 모달에서 즐겨찾기
-const handleDetailToggleFavorite = () => {
-  if (selectedQuote) {
-    toggleFavorite(selectedQuote.id);
-    const updated = filtered.find(q => q.id === selectedQuote.id);
-    if (updated) {
-      setSelectedQuote(updated);
+  const handleListCardPress = (item, index) => {
+    if (selectionMode) {
+      toggleSelect(item.id);
+      return;
     }
-  }
-};
-// 인트로 상태값 + 타이머 추가
-const [showIntro, setShowIntro] = useState(true);
+    
+    // 모달 팝업
+    setSelectedQuote(item);
+    setDetailVisible(true);
+  };
 
-useEffect(() => {
-  const t = setTimeout(() => setShowIntro(false), 1600); // 1.6초
-  return () => clearTimeout(t);
-}, []);
+  // 모달에서 수정
+  const handleDetailEdit = () => {
+    setDetailVisible(false);
+    if (selectedQuote) {
+      openEdit(selectedQuote);
+    }
+  };
 
- QuoteListScreen 
+  // 모달에서 공유
+  const handleDetailShare = () => {
+    if (selectedQuote) {
+      shareQuote(selectedQuote);
+    }
+  };
+
+  // 모달에서 즐겨찾기
+  const handleDetailToggleFavorite = () => {
+    if (selectedQuote) {
+      toggleFavorite(selectedQuote.id);
+      const updated = filtered.find(q => q.id === selectedQuote.id);
+      if (updated) {
+        setSelectedQuote(updated);
+      }
+    }
+  };
+
+  // 인트로 상태값 + 타이머 추가
+  const [showIntro, setShowIntro] = useState(true);
+
+  useEffect(() => {
+    const t = setTimeout(() => setShowIntro(false), 1600); // 1.6초
+    return () => clearTimeout(t);
+  }, []);
 
   const switchViewMode = (targetIndex = null) => {
-  const nextMode = viewMode === VIEW_MODES.LIST ? VIEW_MODES.PAGE : VIEW_MODES.LIST;
-  
-  if (nextMode === VIEW_MODES.PAGE && filtered.length > 0) {
-    const indexToScroll = targetIndex !== null ? targetIndex : currentIndex;
+    const nextMode = viewMode === VIEW_MODES.LIST ? VIEW_MODES.PAGE : VIEW_MODES.LIST;
     
-    // 먼저 currentIndex 업데이트
-    if (targetIndex !== null && targetIndex !== currentIndex) {
-      setCurrentIndex(indexToScroll);
-    }
-    
-    // viewMode 변경
-    setViewMode(nextMode);
-    
-    // 스크롤은 viewMode 변경 후 실행
-    setTimeout(() => {
-      if (pageListRef.current && indexToScroll < filtered.length) {
-        try {
-          pageListRef.current.scrollToIndex({
-            index: indexToScroll,
-            animated: false,
-          });
-        } catch (e) {
-          console.log('ScrollToIndex failed:', e);
-        }
+    if (nextMode === VIEW_MODES.PAGE && filtered.length > 0) {
+      const indexToScroll = targetIndex !== null ? targetIndex : currentIndex;
+      
+      // 먼저 currentIndex 업데이트
+      if (targetIndex !== null && targetIndex !== currentIndex) {
+        setCurrentIndex(indexToScroll);
       }
-    }, 150); // 100 -> 150으로 증가
-  } else {
-    setViewMode(nextMode);
-  }
-};
-
-const onViewableItemsChanged = useRef(({ viewableItems }) => {
-  if (
-    viewableItems &&
-    viewableItems.length > 0 &&
-    viewModeRef.current === VIEW_MODES.LIST // PAGE가 아닌 LIST일 때만
-  ) {
-    const idx = viewableItems[0].index ?? 0;
-    if (typeof idx === 'number') {
-      setCurrentIndex(idx);
+      
+      // viewMode 변경
+      setViewMode(nextMode);
+      
+      // 스크롤은 viewMode 변경 후 실행
+      setTimeout(() => {
+        if (pageListRef.current && indexToScroll < filtered.length) {
+          try {
+            pageListRef.current.scrollToIndex({
+              index: indexToScroll,
+              animated: false,
+            });
+          } catch (e) {
+            console.log('ScrollToIndex failed:', e);
+          }
+        }
+      }, 150); // 100 -> 150으로 증가
+    } else {
+      setViewMode(nextMode);
     }
-  }
-}).current;
+  };
+
+  const onViewableItemsChanged = useRef(({ viewableItems }) => {
+    if (
+      viewableItems &&
+      viewableItems.length > 0 &&
+      viewModeRef.current === VIEW_MODES.LIST // PAGE가 아닌 LIST일 때만
+    ) {
+      const idx = viewableItems[0].index ?? 0;
+      if (typeof idx === 'number') {
+        setCurrentIndex(idx);
+      }
+    }
+  }).current;
 
   const viewabilityConfig = useRef({
     itemVisiblePercentThreshold: 60,
   }).current;
 
 
- // 백업 함수 추가
-const handleBackup = async () => {
-  console.log('🔵 handleBackup 시작, quotes:', quotes.length); // 추가
-  try {
-    const result = await backupQuotes(quotes);
-    console.log('🔵 backupQuotes 결과:', result); // 추가
-    if (result.success) {
-      Alert.alert('백업 완료', `${result.fileName} 파일이 생성되었습니다.`);
-    } else {
-      Alert.alert('백업 실패', result.error || '백업 중 오류가 발생했습니다.');
-    }
-  } catch (error) {
-    console.error('🔴 백업 중 에러:', error); // 추가
-  }
-};
-
-  // 복원 함수 추가
-  const handleRestore = async () => {
-    const result = await restoreQuotes();
-    if (result.success) {
-      const restored = await loadQuotes();
-      setQuotes(restored);
-      setSettingsVisible(false);
-      Alert.alert(
-        '복원 완료',
-        `${result.count}개의 문장이 복원되었습니다.`
-      );
-    } else if (!result.canceled) {
-      Alert.alert('복원 실패', result.error || '복원 중 오류가 발생했습니다.');
+  // 백업 함수
+  const handleBackup = async () => {
+    console.log('=== BACKUP START ===');
+    console.log('quotes.length:', quotes.length);
+    
+    try {
+      const result = await backupQuotes(quotes);
+      console.log('backup result:', result);
+      
+      if (result.success) {
+        Alert.alert('✅ 백업 완료', `${result.fileName}\n파일이 저장되었습니다.`);
+        setSettingsVisible(false);
+      } else {
+        Alert.alert('❌ 백업 실패', result.error || '백업 중 오류가 발생했습니다.');
+      }
+    } catch (error) {
+      console.error('BACKUP ERROR:', error);
+      Alert.alert('❌ 에러', error.message || '알 수 없는 오류가 발생했습니다.');
     }
   };
-// 여기에 추가!
-const toggleViewMode = () => {
-  const nextMode = viewMode === VIEW_MODES.LIST ? VIEW_MODES.PAGE : VIEW_MODES.LIST;
-  
-  if (nextMode === VIEW_MODES.PAGE && filtered.length > 0) {
-    // 무조건 첫 번째 항목으로 이동
-    setCurrentIndex(0);
-    setViewMode(nextMode);
+
+  // 복원 함수
+  const handleRestore = async () => {
+    console.log('=== RESTORE START ===');
     
-    setTimeout(() => {
-      if (pageListRef.current) {
-        try {
-          pageListRef.current.scrollToIndex({
-            index: 0,
-            animated: false,
-          });
-        } catch (e) {
-          console.log('ScrollToIndex failed:', e);
-        }
+    try {
+      const result = await restoreQuotes();
+      console.log('restore result:', result);
+      
+      if (result.success) {
+        setSettingsVisible(false);
+        Alert.alert(
+          '✅ 복원 완료',
+          `${result.count}개의 문장이 복원되었습니다.\n\n앱을 다시 시작해주세요.`,
+          [{ text: '확인', style: 'default' }]
+        );
+      } else if (!result.canceled) {
+        Alert.alert('❌ 복원 실패', result.error || '복원 중 오류가 발생했습니다.');
       }
-    }, 100);
-  } else {
-    setViewMode(nextMode);
-  }
-};
-  // 전체 삭제 함수 수정
-const handleClearAll = async () => {
-  const result = await deleteAllQuotes();  // ← 추가!
-  if (result.success) {
-    clearAll();  // 그다음 메모리 초기화
-    setSettingsVisible(false);
-    Alert.alert('완료', '모든 데이터가 삭제되었습니다.');
-  } else {
-    Alert.alert('실패', result.error || '삭제 중 오류가 발생했습니다.');
-  }
-};
+    } catch (error) {
+      console.error('RESTORE ERROR:', error);
+      Alert.alert('❌ 에러', error.message || '알 수 없는 오류가 발생했습니다.');
+    }
+  };
+
+  // 전체 삭제 함수
+  const handleClearAll = async () => {
+    console.log('=== CLEAR ALL START ===');
+    
+    try {
+      const result = await deleteAllQuotes();
+      console.log('delete result:', result);
+      
+      if (result.success) {
+        clearAll();
+        setSettingsVisible(false);
+        Alert.alert('✅ 삭제 완료', '모든 데이터가 삭제되었습니다.');
+      } else {
+        Alert.alert('❌ 삭제 실패', result.error || '삭제 중 오류가 발생했습니다.');
+      }
+    } catch (error) {
+      console.error('DELETE ERROR:', error);
+      Alert.alert('❌ 에러', error.message || '알 수 없는 오류가 발생했습니다.');
+    }
+  };
+
+  // 뷰 모드 토글
+  const toggleViewMode = () => {
+    const nextMode = viewMode === VIEW_MODES.LIST ? VIEW_MODES.PAGE : VIEW_MODES.LIST;
+    
+    if (nextMode === VIEW_MODES.PAGE && filtered.length > 0) {
+      // 무조건 첫 번째 항목으로 이동
+      setCurrentIndex(0);
+      setViewMode(nextMode);
+      
+      setTimeout(() => {
+        if (pageListRef.current) {
+          try {
+            pageListRef.current.scrollToIndex({
+              index: 0,
+              animated: false,
+            });
+          } catch (e) {
+            console.log('ScrollToIndex failed:', e);
+          }
+        }
+      }, 100);
+    } else {
+      setViewMode(nextMode);
+    }
+  };
 
   if (showIntro) return <IntroScreen />;
 
@@ -330,7 +353,7 @@ const handleClearAll = async () => {
                  {/* 설정 버튼 추가 */}
                 <HeaderButton 
                     onPress={() => setSettingsVisible(true)}
-                    style={{ marginTop: 15 }}  // 여기에 직접
+                    style={{ marginTop: 15 }}
                   >
                   <Text style={styles.settingsBtnText}>⋮</Text>
                 </HeaderButton>
@@ -339,7 +362,6 @@ const handleClearAll = async () => {
                 <Text style={[styles.title, { fontFamily: 'Montserrat-Bold' }]}>
                   <Text style={{ opacity: 0.3 }}>Exploring Minds,{"\n"}Inspiring </Text>
                   Sentences.{"\n"}
-                  {/* What's yours? */}
                 </Text>
               </View>
 
@@ -496,7 +518,7 @@ const handleClearAll = async () => {
                 pageHeight={pageHeight}
                 selectionMode={selectionMode}
                 selected={selected}
-                pageListRef={pageListRef}  // 이 줄 확인 (이미 있어야 함)
+                pageListRef={pageListRef}
                 onSetCurrentIndex={setCurrentIndex}
                 onSetPageHeight={setPageHeight}
                 onCardPress={(id) => {
@@ -533,7 +555,7 @@ const handleClearAll = async () => {
             onClose={handleEditorClose}
           />
 
-           {/* 설정 화면 추가 */}
+           {/* 설정 화면 */}
           <SettingsScreen
             visible={settingsVisible}
             onClose={() => setSettingsVisible(false)}
@@ -543,7 +565,7 @@ const handleClearAll = async () => {
             totalCount={quotes.length}
           />
 
-          {/* 태그 필터 모달 추가 */}
+          {/* 태그 필터 모달 */}
           <TagFilterModal
             visible={tagModalVisible}
             allTags={allTags}
@@ -552,16 +574,15 @@ const handleClearAll = async () => {
             onClose={() => setTagModalVisible(false)}
           />
 
-          
-{/* 이 부분 추가! */}
-<QuoteDetailModal
-  visible={detailVisible}
-  quote={selectedQuote}
-  onClose={() => setDetailVisible(false)}
-  onEdit={handleDetailEdit}
-  onShare={handleDetailShare}
-  onToggleFavorite={handleDetailToggleFavorite}
-/>
+          {/* 상세보기 모달 */}
+          <QuoteDetailModal
+            visible={detailVisible}
+            quote={selectedQuote}
+            onClose={() => setDetailVisible(false)}
+            onEdit={handleDetailEdit}
+            onShare={handleDetailShare}
+            onToggleFavorite={handleDetailToggleFavorite}
+          />
         </SafeAreaView>
       </GestureHandlerRootView>
     </SafeAreaProvider>
@@ -569,7 +590,6 @@ const handleClearAll = async () => {
 }
 
 const styles = StyleSheet.create({
-
   settingsBtnText: {
     fontFamily: 'Montserrat-Bold',
     fontSize: 22,
@@ -597,7 +617,6 @@ const styles = StyleSheet.create({
     height: 22,
     tintColor: '#1D2B26',
   },
-  // 태그 버튼 스타일 추가
   tagBtnText: {
     fontSize: 17,
     fontWeight: '600',
@@ -608,12 +627,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#000000',
     paddingLeft: 10,
-    paddingRight:5,
-    height:30,
+    paddingRight: 5,
+    height: 30,
     borderRadius: 16,
     marginLeft: 3,
-    marginTop:2,
-    marginBotton:0,
+    marginTop: 2,
+    marginBottom: 0,
   },
   tagFilterText: {
     fontSize: 12,
@@ -653,8 +672,8 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#111',
     lineHeight: 32,
-    letterSpacing:-1.5,
-    paddingLeft:5,
+    letterSpacing: -1.5,
+    paddingLeft: 5,
   },
   headerBtns: {
     flexDirection: 'row',
@@ -669,6 +688,6 @@ const styles = StyleSheet.create({
     width: "100%",
     flexDirection: 'row',
     justifyContent: 'space-between',
-    height:30,
+    height: 30,
   },
 });
