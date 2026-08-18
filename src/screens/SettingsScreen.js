@@ -10,8 +10,8 @@ import {
   Alert,
   Image,
 } from 'react-native';
-import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
-import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
+// GestureHandlerRootView, SafeAreaProvider import 제거!
 
 export const SettingsScreen = ({ 
   visible, 
@@ -66,95 +66,93 @@ export const SettingsScreen = ({
       presentationStyle="fullScreen"
       onRequestClose={onClose}
     >
-      <SafeAreaProvider>
-        <GestureHandlerRootView style={{ flex: 1 }}>
-          <SafeAreaView style={styles.screen} edges={['top', 'left', 'right']}>
-            <View style={styles.header}>
-              <Text style={styles.title}>설정</Text>
-              <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
-                <Text style={styles.closeText}>✕</Text>
-              </TouchableOpacity>
+      <SafeAreaView style={styles.screen} edges={['top', 'left', 'right']}>
+        <View style={styles.header}>
+          <Text style={styles.title}>설정</Text>
+          <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+            <Text style={styles.closeText}>✕</Text>
+          </TouchableOpacity>
+        </View>
+
+        <ScrollView style={styles.body}>
+          {/* 데이터 관리 섹션 */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>데이터 관리</Text>
+            
+            <TouchableOpacity 
+              style={styles.menuItem}
+              onPress={handleBackup}
+              activeOpacity={0.6}
+            >
+              <View style={styles.menuIcon}>
+                <Image
+                  style={styles.menuIconImg}
+                  source={require('../../assets/backup.png')}
+                />
+              </View>
+              <View style={styles.menuTextWrap}>
+                <Text style={styles.menuTitle}>데이터 백업</Text>
+                <Text style={styles.menuDesc}>JSON 파일로 내보내기</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.menuItem}
+              onPress={handleRestore}
+              activeOpacity={0.6}
+            >
+              <View style={styles.menuIcon}>
+                <Image
+                  style={styles.menuIconImg}
+                  source={require('../../assets/restore_2.png')}
+                />
+              </View>
+              <View style={styles.menuTextWrap}>
+                <Text style={styles.menuTitle}>데이터 복원</Text>
+                <Text style={styles.menuDesc}>파일에서 가져오기</Text>
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              style={styles.menuItem}
+              onPress={handleClearAll}
+              activeOpacity={0.6}
+            >
+              <View style={styles.menuIcon}>
+                <Image
+                  style={styles.menuIconImg}
+                  source={require('../../assets/delete.png')}
+                />
+              </View>
+              <View style={styles.menuTextWrap}>
+                <Text style={[styles.menuTitle, styles.menuDanger]}>전체 데이터 삭제</Text>
+                <Text style={styles.menuDesc}>모든 문장 삭제</Text>
+              </View>
+            </TouchableOpacity>
+          </View>
+
+          {/* 앱 정보 섹션 */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>앱 정보</Text>
+            
+            <View style={styles.infoItem}>
+              <Text style={styles.infoLabel}>버전</Text>
+              <Text style={styles.infoValue}>1.5.0</Text>
             </View>
 
-            <ScrollView style={styles.body}>
-              {/* 데이터 관리 섹션 */}
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>데이터 관리</Text>
-                
-                <TouchableOpacity 
-                  style={styles.menuItem}
-                  onPress={handleBackup}
-                >
-                  <Text style={styles.menuIcon}>
-                    <Image
-                        style={styles.menuIconImg}
-                        source={require('../../assets/backup.png')}
-                      />
-                  </Text>
-                  <View style={styles.menuTextWrap}>
-                    <Text style={styles.menuTitle}>데이터 백업</Text>
-                    <Text style={styles.menuDesc}>JSON 파일로 내보내기</Text>
-                  </View>
-                </TouchableOpacity>
-
-                <TouchableOpacity 
-                  style={styles.menuItem}
-                  onPress={handleRestore}
-                >
-                  <Text style={styles.menuIcon}>
-                    <Image
-                        style={styles.menuIconImg}
-                        source={require('../../assets/restore_2.png')}
-                      />
-                  </Text>
-                  <View style={styles.menuTextWrap}>
-                    <Text style={styles.menuTitle}>데이터 복원</Text>
-                    <Text style={styles.menuDesc}>파일에서 가져오기</Text>
-                  </View>
-                </TouchableOpacity>
-
-                <TouchableOpacity 
-                  style={styles.menuItem}
-                  onPress={handleClearAll}
-                >
-                  <Text style={styles.menuIcon}>
-                    <Image
-                        style={styles.menuIconImg}
-                        source={require('../../assets/delete.png')}
-                      />
-                  </Text>
-                  <View style={styles.menuTextWrap}>
-                    <Text style={[styles.menuTitle, styles.menuDanger]}>전체 데이터 삭제</Text>
-                    <Text style={styles.menuDesc}>모든 문장 삭제</Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
-
-              {/* 앱 정보 섹션 */}
-              <View style={styles.section}>
-                <Text style={styles.sectionTitle}>앱 정보</Text>
-                
-                <View style={styles.infoItem}>
-                  <Text style={styles.infoLabel}>버전</Text>
-                  <Text style={styles.infoValue}>1.5.0</Text>
-                </View>
-
-                <View style={styles.infoItem}>
-                  <Text style={styles.infoLabel}>저장된 문장</Text>
-                  <Text style={styles.infoValue}>{totalCount}개</Text>
-                </View>
-              </View>
-            </ScrollView>
-          </SafeAreaView>
-        </GestureHandlerRootView>
-      </SafeAreaProvider>
+            <View style={styles.infoItem}>
+              <Text style={styles.infoLabel}>저장된 문장</Text>
+              <Text style={styles.infoValue}>{totalCount}개</Text>
+            </View>
+          </View>
+        </ScrollView>
+      </SafeAreaView>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
-
-    menuIconImg: {
+  menuIconImg: {
     width: 25,
     height: 25,
   },
@@ -214,8 +212,10 @@ const styles = StyleSheet.create({
     borderBottomColor: '#F8F9FA',
   },
   menuIcon: {
-    fontSize: 22,
+    width: 22,
     marginRight: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   menuTextWrap: {
     flex: 1,
@@ -238,10 +238,10 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 15,
-    paddingHorizontal:20,
-    backgroundColor:"#fafafa",
-    borderRadius:10,
-    marginBottom:5
+    paddingHorizontal: 20,
+    backgroundColor: "#fafafa",
+    borderRadius: 10,
+    marginBottom: 5,
   },
   infoLabel: {
     fontSize: 14,
