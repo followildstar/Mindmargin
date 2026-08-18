@@ -12,7 +12,7 @@ import { TagFilterModal } from './src/screens/TagFilterModal';
 import { QuoteListScreen } from './src/screens/QuoteListScreen';
 import { QuotePageScreen } from './src/screens/QuotePageScreen';
 import { EditorScreen } from './src/screens/EditorScreen';
-import { backupQuotes, restoreQuotes } from './src/utils/storage';
+import { backupQuotes, restoreQuotes, loadQuotes, deleteAllQuotes } from './src/utils/storage';
 
 import { useQuotes } from './src/hooks/useQuotes';
 import { useSelection } from './src/hooks/useSelection';
@@ -292,10 +292,16 @@ const toggleViewMode = () => {
   }
 };
   // 전체 삭제 함수 수정
-  const handleClearAll = () => {
-    clearAll();
+const handleClearAll = async () => {
+  const result = await deleteAllQuotes();  // ← 추가!
+  if (result.success) {
+    clearAll();  // 그다음 메모리 초기화
     setSettingsVisible(false);
-  };
+    Alert.alert('완료', '모든 데이터가 삭제되었습니다.');
+  } else {
+    Alert.alert('실패', result.error || '삭제 중 오류가 발생했습니다.');
+  }
+};
 
   if (showIntro) return <IntroScreen />;
 
