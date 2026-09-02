@@ -57,79 +57,30 @@ export const VIEW_MODES = {
   PAGE: 'page',
 };
 
-// 더미 컨텐츠
+// src/utils/constants.js 맨 아래에 추가
 
 export const SEED_KEY = 'mindmargin_seeded_v1';
 
 export const SAMPLE_QUOTES = [
   {
-    text: '여백은 비어 있는 것이 아니라, 아직 채워지지 않은 가능성이다.',
+    text: '하하여백은 비어 있는 것이 아니라, 아직 채워지지 않은 가능성이다.',
     source: 'Mind Margin',
     tags: ['영감', '여백'],
     bgColor: '#FFFFFF',
     textColor: '#111111',
   },
   {
-    text: '검토되지 않은 삶은 살 가치가 없다.',
-    source: '소크라테스',
-    tags: ['철학', '성찰'],
-    bgColor: '#1D2B26',
-    textColor: '#F5F3EE',
-  },
-  {
-    text: '우리는 반복하는 존재다. 그러므로 탁월함은 행동이 아니라 습관이다.',
-    source: '아리스토텔레스',
-    tags: ['습관', '성장'],
-    bgColor: '#E8E4DC',
-    textColor: '#2B2B2B',
-  },
-  {
-    text: '천 리 길도 한 걸음부터 시작된다.',
-    source: '노자',
-    tags: ['시작', '용기'],
-    bgColor: '#2E4A62',
-    textColor: '#FFFFFF',
-  },
-  {
-    text: '오늘 할 수 있는 일을 내일로 미루지 말라.',
-    source: '벤자민 프랭클린',
-    tags: ['실행', '시간'],
-    bgColor: '#F4E9DC',
-    textColor: '#3A2F26',
-  },
-  {
-    text: '자기 자신에게 진실하라.',
-    source: '셰익스피어, 햄릿',
-    tags: ['자존감', '진실'],
-    bgColor: '#6B4C57',
-    textColor: '#FFF8F5',
-  },
-  {
-    text: '나는 실패한 것이 아니다. 되지 않는 방법을 찾아냈을 뿐이다.',
-    source: '토머스 에디슨',
-    tags: ['도전', '실패'],
-    bgColor: '#DCE5DE',
-    textColor: '#1F3329',
-  },
-  {
-    text: '가장 어두운 밤도 끝이 나고 해는 떠오른다.',
-    source: '빅토르 위고',
-    tags: ['희망', '위로'],
-    bgColor: '#3D3A5C',
-    textColor: '#F0EDFF',
-  },
-  {
     text: '문장을 모으는 일은 결국 나를 모으는 일이다.',
     source: '',
-    tags: ['기록', '여백'],
-    bgColor: '#F9F5F0',
-    textColor: '#2A2A2A',
+    tags: ['기록'],
+    bgColor: '#F4F1EC',
+    textColor: '#1D2B26',
   },
   {
     text: '좋은 생각은 오래 머무는 것이 아니라, 붙잡아 둔 것이다.',
     source: '',
-    tags: ['기록', '생각'],
-    bgColor: '#8C7B6B',
-    textColor: '#FFFDF9',
+    tags: ['생각', '기록'],
+    bgColor: '#1D2B26',
+    textColor: '#FFFFFF',
   },
 ];
