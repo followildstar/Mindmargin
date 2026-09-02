@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as FileSystem from 'expo-file-system/legacy';
 import * as Sharing from 'expo-sharing';
 import * as DocumentPicker from 'expo-document-picker';
-import { STORAGE_KEY } from './constants';
+import { STORAGE_KEY, SEED_KEY } from './constants';
 import { tryParse, migrateArray } from './formatters';
 
 export const loadQuotes = async () => {
@@ -239,6 +239,8 @@ export const restoreQuotes = async () => {
 export const deleteAllQuotes = async () => {
   try {
     await AsyncStorage.removeItem(STORAGE_KEY);
+    // 시드 플래그를 남겨서 재시작 시 더미가 다시 들어오지 않게 함
+    await AsyncStorage.setItem(SEED_KEY, 'true');
     return { success: true };
   } catch (error) {
     console.error('Delete failed:', error);
