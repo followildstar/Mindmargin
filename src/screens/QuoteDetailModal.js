@@ -32,7 +32,7 @@ export const QuoteDetailModal = ({
       transparent={true}
       onRequestClose={onClose}
     >
-      <BlurView intensity={20} style={[styles.dimBackground, { backgroundColor: 'rgba(0, 0, 0, 0.8)' }]}>
+      <BlurView intensity={20} style={[styles.dimBackground, { backgroundColor: 'rgba(0, 0, 0, 0.06)' }]}
         <Pressable style={styles.pressableArea} onPress={onClose}>
           <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
             <Pressable
@@ -108,8 +108,7 @@ export const QuoteDetailModal = ({
 
 const styles = StyleSheet.create({
   dimBackground: {
-    flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.8)'
+    flex: 1
   },
   pressableArea: {
     flex: 1,
