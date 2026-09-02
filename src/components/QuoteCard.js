@@ -93,7 +93,7 @@ export const QuoteCard = ({
       </View>
     </Pressable>
   );
-
+return selectionMode ? (
     CardContent
   ) : (
     <Swipeable renderRightActions={RightActions} overshootRight={false}>
