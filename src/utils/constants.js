@@ -56,3 +56,30 @@ export const VIEW_MODES = {
   LIST: 'list',
   PAGE: 'page',
 };
+// src/utils/constants.js 맨 아래에 추가
+
+export const SEED_KEY = 'mindmargin_seeded_v1';
+
+export const SAMPLE_QUOTES = [
+  {
+    text: '여백은 비어 있는 것이 아니라, 아직 채워지지 않은 가능성이다.',
+    source: 'Mind Margin',
+    tags: ['영감', '여백'],
+    bgColor: '#FFFFFF',
+    textColor: '#111111',
+  },
+  {
+    text: '문장을 모으는 일은 결국 나를 모으는 일이다.',
+    source: '',
+    tags: ['기록'],
+    bgColor: '#F4F1EC',
+    textColor: '#1D2B26',
+  },
+  {
+    text: '좋은 생각은 오래 머무는 것이 아니라, 붙잡아 둔 것이다.',
+    source: '',
+    tags: ['생각', '기록'],
+    bgColor: '#1D2B26',
+    textColor: '#FFFFFF',
+  },
+];
