@@ -4,8 +4,6 @@ import { View, Text,  Image, TouchableOpacity, Pressable, StyleSheet } from 'rea
 import { Swipeable } from 'react-native-gesture-handler';
 import { formatDate } from '../utils/formatters';
 
-
-import { View, Text, Image, TouchableOpacity, Pressable, StyleSheet, Platform } from 'react-native';
 export const QuoteCard = ({
   item,
   index,
@@ -95,14 +93,14 @@ export const QuoteCard = ({
       </View>
     </Pressable>
   );
-return selectionMode || Platform.OS === 'web' ? (
-  CardContent
-) : (
-  <Swipeable renderRightActions={RightActions} overshootRight={false}>
-    {CardContent}
-  </Swipeable>
-);
 
+    CardContent
+  ) : (
+    <Swipeable renderRightActions={RightActions} overshootRight={false}>
+      {CardContent}
+    </Swipeable>
+  );
+};
 
 const styles = StyleSheet.create({
   card: {
