@@ -3,6 +3,8 @@ import React from 'react';
 import { View, Text,  Image, TouchableOpacity, Pressable, StyleSheet } from 'react-native';
 import { Swipeable } from 'react-native-gesture-handler';
 import { formatDate } from '../utils/formatters';
+
+
 import { View, Text, Image, TouchableOpacity, Pressable, StyleSheet, Platform } from 'react-native';
 export const QuoteCard = ({
   item,
@@ -100,14 +102,7 @@ return selectionMode || Platform.OS === 'web' ? (
     {CardContent}
   </Swipeable>
 );
-//  260902 수정   return selectionMode ? (
-//     CardContent
-//   ) : (
-//     <Swipeable renderRightActions={RightActions} overshootRight={false}>
-//       {CardContent}
-//     </Swipeable>
-//   );
-// };
+
 
 const styles = StyleSheet.create({
   card: {
