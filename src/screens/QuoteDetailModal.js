@@ -108,8 +108,10 @@ export const QuoteDetailModal = ({
 
 const styles = StyleSheet.create({
   dimBackground: {
-  flex: 1,
-  backgroundColor: 'rgba(0, 0, 0, 0.06)',
+ flex: 1,
+  backgroundColor: 'rgba(0, 0, 0, 0.08)',
+  backdropFilter: 'saturate(180%) blur(4px)',
+  WebkitBackdropFilter: 'saturate(180%) blur(4px)',  // Safari 대응
 },
   pressableArea: {
     flex: 1,
