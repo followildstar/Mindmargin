@@ -60,7 +60,7 @@ export const VIEW_MODES = {
 // src/utils/constants.js 맨 아래에 추가
 // src/utils/constants.js 맨 아래에 추가
 
-export const SEED_KEY = 'mindmargin_seeded_v1';
+export const SEED_KEY = 'mindmargin_seeded_v2';
 
 export const SAMPLE_QUOTES = [
   {
