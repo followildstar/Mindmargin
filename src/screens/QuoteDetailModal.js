@@ -36,7 +36,7 @@ export const QuoteDetailModal = ({
         <Pressable style={styles.pressableArea} onPress={onClose}>
           <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
             <Pressable
-              style={[styles.modalContent, { backgroundColor: quote.bgColor }]}
+              style={[styles.modalContent, { backgroundColor: 'rgba(0, 0, 0, 0.8)' }]}
               onPress={(e) => e.stopPropagation()}
             >
               {/* 닫기 버튼 */}
