@@ -1,30 +1,67 @@
 // src/hooks/useQuotes.js
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Alert, Share } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { loadQuotes, saveQuotes } from '../utils/storage';
 import { uuid, now, formatDate } from '../utils/formatters';
-import { SORT_MODES } from '../utils/constants';
+import { SORT_MODES, SAMPLE_QUOTES, SEED_KEY } from '../utils/constants';
 
 export const useQuotes = () => {
   const [quotes, setQuotes] = useState([]);
   const [query, setQuery] = useState('');
   const [onlyFav, setOnlyFav] = useState(false);
   const [sortMode, setSortMode] = useState(SORT_MODES.NEWEST);
-  const [selectedTags, setSelectedTags] = useState([]); // 추가
+  const [selectedTags, setSelectedTags] = useState([]);
 
-  // Load quotes on mount
+  // 최초 로드가 끝나기 전에는 저장하지 않도록 막는 플래그
+  const isLoaded = useRef(false);
+
+  // 최초 로드 + 첫 실행 시 더미 데이터 주입
   useEffect(() => {
-    loadQuotes().then(setQuotes);
+    const init = async () => {
+      const loadedQuotes = await loadQuotes();
+
+      if (loadedQuotes.length > 0) {
+        setQuotes(loadedQuotes);
+        isLoaded.current = true;
+        return;
+      }
+
+      // 이미 한 번 시드를 넣었으면 다시 넣지 않음 (사용자가 전체 삭제한 경우)
+      const seeded = await AsyncStorage.getItem(SEED_KEY);
+      if (seeded) {
+        setQuotes([]);
+        isLoaded.current = true;
+        return;
+      }
+
+      const seedQuotes = SAMPLE_QUOTES.map((s) => ({
+        id: uuid(),
+        text: s.text,
+        source: s.source || undefined,
+        tags: s.tags || [],
+        favorite: false,
+        bgColor: s.bgColor,
+        textColor: s.textColor,
+        createdAt: now(),
+        updatedAt: now(),
+      }));
+
+      setQuotes(seedQuotes);
+      await AsyncStorage.setItem(SEED_KEY, 'true');
+      isLoaded.current = true;
+    };
+
+    init();
   }, []);
 
-  // Save quotes whenever they change
+  // 변경될 때마다 저장 (빈 배열도 저장되어야 전체 삭제가 유지됨)
   useEffect(() => {
-    if (quotes.length > 0) {
-      saveQuotes(quotes);
-    }
+    if (!isLoaded.current) return;
+    saveQuotes(quotes);
   }, [quotes]);
 
-  // 전체 태그 목록 추출 (추가)
+  // 전체 태그 목록 추출
   const allTags = useMemo(() => {
     const tagSet = new Set();
     quotes.forEach((quote) => {
@@ -35,11 +72,11 @@ export const useQuotes = () => {
     return Array.from(tagSet).sort();
   }, [quotes]);
 
-  // Filter and sort quotes
+  // 필터링 + 정렬
   const filtered = useMemo(() => {
     let list = quotes;
     const q = query.trim().toLowerCase();
-    
+
     if (q) {
       list = list.filter((item) => {
         const text = item.text?.toLowerCase() ?? '';
@@ -48,27 +85,26 @@ export const useQuotes = () => {
         return text.includes(q) || src.includes(q) || tags.includes(q);
       });
     }
-    
+
     if (onlyFav) {
       list = list.filter((item) => item.favorite);
     }
 
-    // 태그 필터 추가
     if (selectedTags.length > 0) {
       list = list.filter((item) => {
         if (!item.tags || item.tags.length === 0) return false;
         return selectedTags.some((tag) => item.tags.includes(tag));
       });
     }
-    
+
     list = [...list].sort((a, b) => {
       const au = Number(a.updatedAt) || 0;
       const bu = Number(b.updatedAt) || 0;
       return sortMode === SORT_MODES.NEWEST ? bu - au : au - bu;
     });
-    
+
     return list;
-  }, [quotes, query, onlyFav, selectedTags, sortMode]); // selectedTags 의존성 추가
+  }, [quotes, query, onlyFav, selectedTags, sortMode]);
 
   const addQuote = (quoteData) => {
     const newQuote = {
@@ -126,10 +162,7 @@ export const useQuotes = () => {
   };
 
   const clearAll = () => {
-    Alert.alert('전체 비우기', '모든 항목을 삭제할까요?', [
-      { text: '취소', style: 'cancel' },
-      { text: '삭제', style: 'destructive', onPress: () => setQuotes([]) },
-    ]);
+    setQuotes([]);
   };
 
   const toggleFavorite = (id) => {
@@ -161,7 +194,6 @@ export const useQuotes = () => {
     );
   };
 
-  // 태그 필터 관련 함수 추가
   const toggleTagFilter = (tag) => {
     setSelectedTags((prev) => {
       if (prev.includes(tag)) {
@@ -178,7 +210,7 @@ export const useQuotes = () => {
   };
 
   return {
-    quotes, 
+    quotes,
     filtered,
     query,
     setQuery,
@@ -193,7 +225,6 @@ export const useQuotes = () => {
     clearAll,
     toggleFavorite,
     shareQuote,
-    // 태그 필터 추가
     allTags,
     selectedTags,
     toggleTagFilter,
