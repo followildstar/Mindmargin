@@ -36,7 +36,7 @@ export const QuoteDetailModal = ({
         <Pressable style={styles.pressableArea} onPress={onClose}>
           <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
             <Pressable
-              style={[styles.modalContent, { backgroundColor: 'rgba(0, 0, 0, 0.8)' }]}
+               style={[styles.modalContent, { backgroundColor: quote.bgColor }]}
               onPress={(e) => e.stopPropagation()}
             >
               {/* 닫기 버튼 */}
@@ -109,7 +109,7 @@ export const QuoteDetailModal = ({
 const styles = StyleSheet.create({
   dimBackground: {
     flex: 1,
-    // backgroundColor 삭제 (BlurView가 처리)
+    backgroundColor: 'rgba(0, 0, 0, 0.8)'
   },
   pressableArea: {
     flex: 1,
