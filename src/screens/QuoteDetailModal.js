@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { formatDate } from '../utils/formatters';
-// import { BlurView } from 'expo-blur';
+import { BlurView } from 'expo-blur';
 
 export const QuoteDetailModal = ({
   visible,
@@ -32,7 +32,7 @@ export const QuoteDetailModal = ({
       transparent={true}
       onRequestClose={onClose}
     >
-     <View style={styles.dimBackground}>
+      <BlurView intensity={20} style={[styles.dimBackground, { backgroundColor: 'rgba(0, 0, 0, 0.06)' }]}
         <Pressable style={styles.pressableArea} onPress={onClose}>
           <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right', 'bottom']}>
             <Pressable
@@ -101,7 +101,7 @@ export const QuoteDetailModal = ({
             </Pressable>
           </SafeAreaView>
         </Pressable>
-      </View>
+      </BlurView>
     </Modal>
   );
 };
